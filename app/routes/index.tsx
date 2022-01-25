@@ -1,33 +1,66 @@
+import { DataFunctionArgs } from "@remix-run/server-runtime"
 import { useEffect, useState } from "react"
-import { useLoaderData } from "remix"
-import { app } from "~/electron.server"
+import { Form, Link, useNavigate, useSearchParams } from "remix"
+import { loadSongs } from "~/nautica"
+import { useLoaderDataTyped } from "~/remix-typed"
 
-export function loader() {
-  return {
-    version: app.getVersion(),
-    appData: app.getPath("appData"),
-  }
+export async function loader({ request }: DataFunctionArgs) {
+  const params = new URL(request.url).searchParams
+  return loadSongs({
+    page: maybeFiniteNumber(params.get("page")),
+    query: params.get("query") || undefined,
+  })
 }
 
 export default function Index() {
-  const data = useLoaderData()
+  const data = useLoaderDataTyped<typeof loader>()
+
+  const [params] = useSearchParams()
+  const navigate = useNavigate()
+
+  const queryParam = params.get("query")
+  const [query, setQuery] = useState(queryParam ?? "")
+
+  const page = Math.max(maybeFiniteNumber(params.get("page")) ?? 1, 1)
+
+  useEffect(() => {
+    // only navigate if the query has changed, to prevent fetching too often
+    if (query === queryParam) return
+
+    const timeout = setTimeout(() => {
+      navigate(`?query=${query}`)
+    }, 500)
+    return () => clearTimeout(timeout)
+  }, [query, queryParam, navigate])
+
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Welcome to Remix (in Electron)</h1>
-      <p>Version: {data.version}</p>
-      <p>App data path: {data.appData}</p>
-      <Uptime />
-    </div>
+    <>
+      <Form method="get">
+        <input
+          type="search"
+          name="query"
+          defaultValue={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+        <button type="submit">Search</button>
+      </Form>
+      <ul>
+        {data.data.map((song) => (
+          <li key={song.id}>{song.title}</li>
+        ))}
+      </ul>
+      {data.data.length === 0 && <p>No results found :(</p>}
+      {data.links.prev ? (
+        <Link to={`?page=${page - 1}&query=${query}`}>Last Page</Link>
+      ) : undefined}
+      {data.links.next ? (
+        <Link to={`?page=${page + 1}&query=${query}`}>Next Page</Link>
+      ) : undefined}
+    </>
   )
 }
 
-function Uptime() {
-  const [seconds, setSeconds] = useState(0)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((s) => s + 1)
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [])
-  return <p>This app has been running for {seconds} seconds.</p>
+function maybeFiniteNumber(value: unknown): number | undefined {
+  const numberValue = Number(value)
+  return Number.isFinite(numberValue) ? numberValue : undefined
 }
