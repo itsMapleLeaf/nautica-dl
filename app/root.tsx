@@ -7,7 +7,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "remix"
+import { cx } from "twind"
 import fonts from "./fonts.css"
+import { scrollbarClass } from "./styles"
 
 export const meta: MetaFunction = () => {
   return { title: "Nautica Downloader" }
@@ -15,7 +17,10 @@ export const meta: MetaFunction = () => {
 
 export default function App() {
   return (
-    <html lang="en" className="bg-stone-900 text-stone-100 font-body">
+    <html
+      lang="en"
+      className={cx("bg-stone-900 text-stone-100 font-body", scrollbarClass)}
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -24,7 +29,6 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <h1 className="font-heading text-4xl font-light">Nautica Downloader</h1>
         <Outlet />
         <ScrollRestoration />
         <Scripts />

@@ -63,10 +63,10 @@ export type NauticaTag = {
 }
 
 export type NauticaPageLinks = {
-  first: string
-  last: string
-  prev: any
-  next: string
+  first?: string
+  last?: string
+  prev?: string
+  next?: string
 }
 
 export type NauticaPageMeta = {
@@ -87,6 +87,7 @@ export function loadSongs({
   query?: string
 } = {}): Promise<TypedResponse<NauticaPage>> {
   const url = new URL(apiUrl)
+  url.searchParams.set("level", "18")
   if (page) url.searchParams.set("page", String(page))
   if (query) url.searchParams.set("q", query)
   return fetch(url.toString())
