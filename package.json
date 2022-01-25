@@ -7,11 +7,10 @@
   "main": "desktop/main.js",
   "scripts": {
     "prepare": "remix setup node",
-    "dev": "concurrently 'remix watch' 'pnpm nodemon-desktop' 'pnpm tailwind -- --watch'",
-    "build": "pnpm tailwind -- --minify && remix build",
+    "dev": "concurrently 'remix watch' 'pnpm nodemon-desktop'",
+    "build": "remix build",
     "start": "cross-env NODE_ENV=production electron desktop/main.cjs",
     "nodemon-desktop": "cross-env NODE_ENV=development nodemon --watch desktop --ignore desktop/build --exec electron desktop/main.cjs",
-    "tailwind": "tailwindcss --config tailwind.config.cjs --output app/tailwind.out.css",
     "lint": "eslint --ext js,ts,tsx .",
     "lint-fix": "pnpm lint -- --fix",
     "format": "prettier --write .",
@@ -27,15 +26,14 @@
     "@remix-run/node": "^1.1.3",
     "@remix-run/react": "^1.1.3",
     "@remix-run/server-runtime": "^1.1.3",
-    "autoprefixer": "^10.4.2",
+    "@twind/tailwind": "^1.0.0-next.25",
     "cross-env": "^7.0.3",
     "mime": "^3.0.0",
     "express": "^4.17.2",
-    "postcss": "^8.4.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "remix": "^1.1.3",
-    "tailwindcss": "^3.0.16"
+    "twind": "^1.0.0-next.25"
   },
   "devDependencies": {
     "@itsmapleleaf/configs": "^1.1.2",
@@ -43,7 +41,6 @@
     "@types/node": "^17.0.15",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
-    "@types/tailwindcss": "^3.0.3",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
     "concurrently": "^7.0.0",
@@ -65,7 +62,9 @@
   "engines": {
     "node": ">=14"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "app/twind-setup.ts"
+  ],
   "eslintConfig": {
     "extends": [
       "./node_modules/@itsmapleleaf/configs/eslint"

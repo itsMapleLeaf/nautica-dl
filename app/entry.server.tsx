@@ -1,6 +1,8 @@
 import { renderToString } from "react-dom/server"
-import { RemixServer } from "remix"
 import type { EntryContext } from "remix"
+import { RemixServer } from "remix"
+import { inline } from "twind"
+import "./twind-setup"
 
 export default function handleRequest(
   request: Request,
@@ -14,7 +16,7 @@ export default function handleRequest(
 
   responseHeaders.set("Content-Type", "text/html")
 
-  return new Response("<!DOCTYPE html>" + markup, {
+  return new Response("<!DOCTYPE html>" + inline(markup), {
     status: responseStatusCode,
     headers: responseHeaders,
   })

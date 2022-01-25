@@ -8,7 +8,6 @@ import {
   ScrollRestoration,
 } from "remix"
 import fonts from "./fonts.css"
-import tailwind from "./tailwind.out.css"
 
 export const meta: MetaFunction = () => {
   return { title: "Nautica Downloader" }
@@ -21,7 +20,6 @@ export default function App() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <link rel="stylesheet" href={fonts} />
-        <link rel="stylesheet" href={tailwind} />
         <Meta />
         <Links />
       </head>
