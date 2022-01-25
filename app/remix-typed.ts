@@ -10,6 +10,7 @@ type JsonValue =
   | null
   | { [Key in string]?: JsonValue }
   | JsonValue[]
+  | undefined
 
 export type TypedResponse<Data extends JsonValue> = Omit<Response, "json"> & {
   json(): Promise<Data>
