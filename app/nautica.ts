@@ -1,4 +1,4 @@
-import { TypedResponse } from "~/remix-typed"
+import type { TypedResponse } from "~/remix-typed"
 
 const apiUrl = "https://ksm.dev/app/songs"
 

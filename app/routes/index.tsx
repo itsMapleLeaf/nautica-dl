@@ -1,10 +1,10 @@
-import { DataFunctionArgs } from "@remix-run/server-runtime"
+import type { DataFunctionArgs } from "@remix-run/server-runtime"
 import { useEffect, useState } from "react"
 import { Form, Link, useNavigate, useSearchParams } from "remix"
 import { loadSongs } from "~/nautica"
 import { useLoaderDataTyped } from "~/remix-typed"
 
-export async function loader({ request }: DataFunctionArgs) {
+export function loader({ request }: DataFunctionArgs) {
   const params = new URL(request.url).searchParams
   return loadSongs({
     page: maybeFiniteNumber(params.get("page")),

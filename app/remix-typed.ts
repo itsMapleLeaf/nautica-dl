@@ -11,7 +11,7 @@ type JsonValue =
   | { [Key in string]?: JsonValue }
   | JsonValue[]
 
-export interface TypedResponse<Data extends JsonValue> extends Response {
+export type TypedResponse<Data extends JsonValue> = Omit<Response, "json"> & {
   json(): Promise<Data>
 }
 
