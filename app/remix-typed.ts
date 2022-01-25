@@ -29,7 +29,7 @@ export function responseTyped(
   return new Response(
     body,
     typeof init === "number" ? { status: init } : init,
-  ) as TypedResponse<JsonValue>
+  ) as TypedResponse<never>
 }
 
 export function jsonTyped<Data extends JsonValue>(
