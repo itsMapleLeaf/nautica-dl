@@ -119,23 +119,23 @@ function SongList() {
 
 function SongCard({ song }: { song: NauticaSong }) {
   return (
-    <div className={cx(raisedPanelClass, "h-full flex flex-col relative")}>
+    <article className={cx(raisedPanelClass, "h-full flex flex-col relative")}>
       <h2 className="p-3 flex flex-col justify-center text-center flex-1">
-        <div className="font-heading leading-tight">{song.artist}</div>
-        <div className="font-heading text-2xl leading-tight">{song.title}</div>
+        <div className="font-heading leading-tight">
+          <span className="sr-only">Artist: </span> {song.artist}
+        </div>
+        <div className="font-heading text-2xl leading-tight">
+          <span className="sr-only">Title: </span> {song.title}
+        </div>
       </h2>
 
-      <img
-        src={song.jacket_url}
-        alt=""
-        className="aspect-square shadow-inner"
-      />
+      <img src={song.jacket_url} alt="" className="aspect-square" />
 
-      <div className="grid grid-flow-col auto-cols-fr">
+      <ul aria-label="Charts" className="grid grid-flow-col auto-cols-fr">
         {song.charts
           .sort((a, b) => a.difficulty - b.difficulty)
           .map((chart) => (
-            <div
+            <li
               key={chart.id}
               className={cx(
                 "flex items-center justify-center py-2",
@@ -145,14 +145,23 @@ function SongCard({ song }: { song: NauticaSong }) {
                 chart.difficulty === 4 && "bg-fuchsia-500/40",
               )}
             >
+              <span className="sr-only">
+                {chartDifficultyName(chart.difficulty)}
+              </span>{" "}
               {chart.level}
-            </div>
+            </li>
           ))}
-      </div>
-
-      <div className="absolute inset-0 flex flex-col justify-between"></div>
-    </div>
+      </ul>
+    </article>
   )
+}
+
+function chartDifficultyName(difficulty: number): string {
+  if (difficulty === 1) return "Beginner"
+  if (difficulty === 2) return "Advanced"
+  if (difficulty === 3) return "Exhaust"
+  if (difficulty === 4) return "Infinite"
+  return ""
 }
 
 function maybeFiniteNumber(value: unknown): number | undefined {
