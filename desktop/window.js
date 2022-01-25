@@ -10,5 +10,6 @@ exports.createWindow = async function createWindow() {
   if (process.env.NODE_ENV === "development") {
     win.webContents.openDevTools()
   }
+  win.removeMenu()
   win.show()
 }
