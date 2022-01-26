@@ -4,16 +4,28 @@ const focusBaseClass = cx`focus:outline-none ring-red-500`
 const focusClass = cx(focusBaseClass, cx`focus:ring-2`)
 const focusVisibleClass = cx(focusBaseClass, cx`focus-visible:ring-2`)
 
-const inputPaddingClass = cx`px-3 py-2`
+const controlPaddingClass = cx`px-3 py-2`
+const clearControlClass = cx`bg-black/40 rounded-md transition text-white/50 hover:text-white hover:bg-black/70 focus:text-white`
 
 export const raisedPanelClass = cx`bg-stone-800 shadow rounded-md overflow-hidden`
 
-export const inputClass = cx(raisedPanelClass, inputPaddingClass, focusClass)
+export const solidInputClass = cx(
+  raisedPanelClass,
+  controlPaddingClass,
+  focusClass,
+)
+
+export const clearInputClass = cx`
+  ${controlPaddingClass}
+  ${focusClass}
+  ${clearControlClass}
+  w-full
+`
 
 const activePressClass = cx`active:(transition-none shadow-none translate-y-[2px])`
 
 export const solidButtonClass = cx(
-  inputPaddingClass,
+  controlPaddingClass,
   focusVisibleClass,
   activePressClass,
   cx`
@@ -24,10 +36,11 @@ export const solidButtonClass = cx(
 )
 
 export const clearButtonClass = cx(
-  inputPaddingClass,
+  controlPaddingClass,
   focusVisibleClass,
   activePressClass,
-  cx`bg-black/70 rounded-md transition opacity-50 hover:opacity-100`,
+  clearControlClass,
+  `w-fit`,
 )
 
 export const scrollbarClass = cx`

@@ -1,6 +1,7 @@
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  CogIcon,
   SearchIcon,
 } from "@heroicons/react/solid"
 import type { DataFunctionArgs } from "@remix-run/server-runtime"
@@ -29,9 +30,10 @@ import {
   buttonIconRightClass,
   clearButtonClass,
   iconClass,
-  inputClass,
+  inlineIconClass,
   raisedPanelClass,
   solidButtonClass,
+  solidInputClass,
 } from "~/styles"
 import fonts from "./fonts.css"
 import { scrollbarClass } from "./styles"
@@ -66,6 +68,9 @@ export default function App() {
       <body>
         <div className="grid gap-3 p-3 w-full max-w-screen-lg mx-auto">
           <header className="flex gap-2">
+            <Link to="/settings" className={clearButtonClass} title="Settings">
+              <CogIcon className={inlineIconClass} />
+            </Link>
             <SearchForm key={location.key} />
           </header>
           <Pagination />
@@ -215,7 +220,7 @@ function InputWithIcon({
 }: { icon: ReactNode } & ComponentPropsWithoutRef<"input">) {
   return (
     <div className="relative">
-      <input {...props} className={cx`${inputClass} pl-10 w-full`} />
+      <input {...props} className={cx`${solidInputClass} pl-10 w-full`} />
       <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 opacity-50 pointer-events-none">
         {icon}
       </span>
