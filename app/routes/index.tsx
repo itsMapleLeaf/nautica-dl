@@ -7,7 +7,14 @@ import {
 import type { DataFunctionArgs } from "@remix-run/server-runtime"
 import type { ComponentPropsWithoutRef, ReactNode } from "react"
 import { useEffect, useState } from "react"
-import { Form, Link, useLocation, useNavigate, useSearchParams } from "remix"
+import {
+  Form,
+  Link,
+  useFetcher,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "remix"
 import { cx } from "twind"
 import { BrowserWindow } from "~/electron.server"
 import type { NauticaSong } from "~/nautica"
@@ -53,15 +60,17 @@ export async function action({ request }: DataFunctionArgs) {
 
 export default function App() {
   const location = useLocation()
+  const fetcher = useFetcher()
+
   return (
     <div className="grid gap-3">
       <header className="flex gap-2">
-        <Form method="post">
+        <fetcher.Form method="post">
           <input type="hidden" name="actionType" value="openSettings" />
           <button type="submit" title="Settings" className={clearButtonClass}>
             <CogIcon className={inlineIconClass} />
           </button>
-        </Form>
+        </fetcher.Form>
         <SearchForm key={location.key} />
       </header>
       <Pagination />
@@ -77,14 +86,15 @@ function SearchForm() {
   const params = Object.fromEntries(useSearchParams()[0])
   const navigate = useNavigate()
 
-  const [query, setQuery] = useState(params.query ?? "")
+  const [query, setQuery] = useState(params.query)
 
   useEffect(() => {
     // only navigate if the query has changed, to prevent fetching too often
     if (query === params.query) return
+    console.log("ran", query, params.query)
 
     const timeout = setTimeout(() => {
-      navigate(`?query=${query}`)
+      navigate(`?query=${query ?? ""}`)
     }, 500)
     return () => clearTimeout(timeout)
   }, [query, params.query, navigate])
