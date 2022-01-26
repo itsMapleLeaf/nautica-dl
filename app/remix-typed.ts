@@ -1,5 +1,5 @@
 import type { DataFunctionArgs } from "@remix-run/server-runtime"
-import { json, redirect, useActionData, useLoaderData } from "remix"
+import { json, redirect, useActionData, useFetcher, useLoaderData } from "remix"
 
 type MaybePromise<Value> = Value | PromiseLike<Value>
 
@@ -17,11 +17,14 @@ export type TypedResponse<Data extends JsonValue> = Omit<Response, "json"> & {
 }
 
 // prettier-ignore
-type LoaderFunctionTyped<Data extends JsonValue> = (args: DataFunctionArgs) =>
+type DataFunctionTyped<Data extends JsonValue> = (args: DataFunctionArgs) =>
   MaybePromise<Data | TypedResponse<Data>>
 
-type InferLoaderData<LoaderFunction> =
-  LoaderFunction extends LoaderFunctionTyped<infer Data> ? Data : never
+type InferLoaderData<DataFunction> = DataFunction extends DataFunctionTyped<
+  infer Data
+>
+  ? Data
+  : never
 
 export function responseTyped(
   body?: BodyInit | null,
@@ -45,13 +48,19 @@ export function redirectTyped(url: string, init?: ResponseInit | number) {
 }
 
 export function useLoaderDataTyped<
-  LoaderFunction extends LoaderFunctionTyped<JsonValue>,
+  DataFunction extends DataFunctionTyped<JsonValue>,
 >() {
-  return useLoaderData<InferLoaderData<LoaderFunction>>()
+  return useLoaderData<InferLoaderData<DataFunction>>()
 }
 
 export function useActionDataTyped<
-  LoaderFunction extends LoaderFunctionTyped<JsonValue>,
+  DataFunction extends DataFunctionTyped<JsonValue>,
 >() {
-  return useActionData<InferLoaderData<LoaderFunction>>()
+  return useActionData<InferLoaderData<DataFunction>>()
+}
+
+export function useFetcherTyped<
+  DataFunction extends DataFunctionTyped<JsonValue>,
+>() {
+  return useFetcher<InferLoaderData<DataFunction>>()
 }
