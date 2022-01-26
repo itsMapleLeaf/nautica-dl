@@ -15,3 +15,7 @@
 - tooltips
   - [ ] settings button
   - [ ] song card chart difficulties
+- improved pagination
+  - [ ] first page
+  - [ ] last page
+  - [ ] page numbers
