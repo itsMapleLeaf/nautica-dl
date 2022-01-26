@@ -51,7 +51,7 @@ export async function action({ request }: DataFunctionArgs) {
 
 export default function Settings() {
   return (
-    <main className="grid gap-3">
+    <main className="grid gap-3 p-3">
       <h1 className="font-heading text-2xl">Settings</h1>
       <SavePathField />
     </main>

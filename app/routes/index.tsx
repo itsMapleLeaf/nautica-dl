@@ -24,11 +24,12 @@ import {
   buttonIconLeftClass,
   buttonIconRightClass,
   clearButtonClass,
+  clearInputClass,
   iconClass,
   inlineIconClass,
+  maxWidthContainer,
   raisedPanelClass,
   solidButtonClass,
-  solidInputClass,
 } from "~/styles"
 
 export function loader({ request }: DataFunctionArgs) {
@@ -63,21 +64,25 @@ export default function App() {
   const fetcher = useFetcher()
 
   return (
-    <div className="grid gap-3">
-      <header className="flex gap-2">
-        <fetcher.Form method="post">
-          <input type="hidden" name="actionType" value="openSettings" />
-          <button type="submit" title="Settings" className={clearButtonClass}>
-            <CogIcon className={inlineIconClass} />
-          </button>
-        </fetcher.Form>
-        <SearchForm key={location.key} />
+    <div className="isolate">
+      <header className="sticky top-0 bg-stone-800 p-3 z-10 shadow">
+        <div className={cx("flex gap-2", maxWidthContainer)}>
+          <fetcher.Form method="post">
+            <input type="hidden" name="actionType" value="openSettings" />
+            <button type="submit" title="Settings" className={clearButtonClass}>
+              <CogIcon className={inlineIconClass} />
+            </button>
+          </fetcher.Form>
+          <SearchForm key={location.key} />
+        </div>
       </header>
-      <Pagination />
-      <main>
-        <SongList />
-      </main>
-      <Pagination />
+      <div className={cx("grid gap-3 p-3", maxWidthContainer)}>
+        <Pagination />
+        <main>
+          <SongList />
+        </main>
+        <Pagination />
+      </div>
     </div>
   )
 }
@@ -215,7 +220,7 @@ function InputWithIcon({
 }: { icon: ReactNode } & ComponentPropsWithoutRef<"input">) {
   return (
     <div className="relative">
-      <input {...props} className={cx`${solidInputClass} pl-10 w-full`} />
+      <input {...props} className={cx`${clearInputClass} pl-9 w-full`} />
       <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 opacity-50 pointer-events-none">
         {icon}
       </span>

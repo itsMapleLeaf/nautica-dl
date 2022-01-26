@@ -29,9 +29,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <div className="w-full max-w-screen-lg mx-auto p-3">
-          <Outlet />
-        </div>
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}

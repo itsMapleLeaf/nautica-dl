@@ -52,3 +52,5 @@ export const iconClass = cx`w-5`
 export const inlineIconClass = cx`${iconClass} inline align-text-bottom leading-none`
 export const buttonIconLeftClass = cx`${inlineIconClass} -ml-1`
 export const buttonIconRightClass = cx`${inlineIconClass} -mr-1`
+
+export const maxWidthContainer = cx`w-full max-w-screen-lg mx-auto`
