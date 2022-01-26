@@ -96,7 +96,6 @@ function SearchForm() {
   useEffect(() => {
     // only navigate if the query has changed, to prevent fetching too often
     if (query === params.query) return
-    console.log("ran", query, params.query)
 
     const timeout = setTimeout(() => {
       navigate(`?query=${query ?? ""}`)
