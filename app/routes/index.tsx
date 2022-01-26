@@ -17,6 +17,7 @@ import {
 } from "remix"
 import { cx } from "twind"
 import { BrowserWindow } from "~/electron.server"
+import { LazyImage } from "~/modules/ui/lazy-image"
 import type { NauticaSong } from "~/nautica"
 import { loadSongs } from "~/nautica"
 import { useLoaderDataTyped } from "~/remix-typed"
@@ -195,7 +196,7 @@ function SongCard({ song }: { song: NauticaSong }) {
         </div>
       </h2>
 
-      <img src={song.jacket_url} alt="" className="aspect-square" />
+        <LazyImage src={song.jacket_url} alt="" className="aspect-square" />
 
       <ul aria-label="Charts" className="grid grid-flow-col auto-cols-fr">
         {song.charts
