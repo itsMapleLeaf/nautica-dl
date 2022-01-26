@@ -1,20 +1,11 @@
-import { XIcon } from "@heroicons/react/outline"
 import { FolderIcon } from "@heroicons/react/solid"
-import * as Dialog from "@radix-ui/react-dialog"
 import type { DataFunctionArgs } from "@remix-run/server-runtime"
-import type { ReactNode } from "react"
 import { useEffect, useState } from "react"
-import { Form, useNavigate, useSubmit } from "remix"
-import { cx } from "twind"
+import { Form, useSubmit } from "remix"
 import { dialog } from "~/electron.server"
 import { useLoaderDataTyped } from "~/remix-typed"
 import { store } from "~/store.server"
-import {
-  clearButtonClass,
-  clearInputClass,
-  inlineIconClass,
-  raisedPanelClass,
-} from "~/styles"
+import { clearButtonClass, clearInputClass, inlineIconClass } from "~/styles"
 
 const savePathStoreKey = "savePath"
 
@@ -27,6 +18,8 @@ const actionTypes = {
   setSavePath: "setSavePath",
   chooseSavePathFromDialog: "chooseSavePathFromDialog",
 } as const
+
+export const meta = () => ({ title: "Settings" })
 
 export function loader() {
   const savePath = maybeString(store.get(savePathStoreKey))
@@ -58,9 +51,10 @@ export async function action({ request }: DataFunctionArgs) {
 
 export default function Settings() {
   return (
-    <ModalDialog title="Settings">
+    <main className="grid gap-3">
+      <h1 className="font-heading text-2xl">Settings</h1>
       <SavePathField />
-    </ModalDialog>
+    </main>
   )
 }
 
@@ -128,40 +122,6 @@ function SavePathField() {
         </button>
       </Form>
     </div>
-  )
-}
-
-function ModalDialog({
-  title,
-  children,
-}: {
-  title: ReactNode
-  children: ReactNode
-}) {
-  const navigate = useNavigate()
-  return (
-    <Dialog.Root open onOpenChange={() => navigate("/")}>
-      <Dialog.Overlay className="fixed inset-0 bg-black/75 backdrop-filter backdrop-blur" />
-      <div className="fixed inset-0 pointer-events-none flex flex-col">
-        <div className="m-auto flex flex-col gap-1 items-end">
-          <Dialog.Close className="pointer-events-auto">
-            <span className="sr-only">Close</span>{" "}
-            <XIcon className={cx(inlineIconClass, "w-6")} />
-          </Dialog.Close>
-          <Dialog.Content
-            className={cx(
-              raisedPanelClass,
-              "shadow w-[500px] p-4 grid gap-4 pointer-events-auto",
-            )}
-          >
-            <Dialog.Title className="font-heading text-2xl">
-              {title}
-            </Dialog.Title>
-            {children}
-          </Dialog.Content>
-        </div>
-      </div>
-    </Dialog.Root>
   )
 }
 
