@@ -45,6 +45,7 @@ export async function action({ request }: DataFunctionArgs) {
 
   if (body.actionType === "openSettings") {
     const parent = BrowserWindow.getFocusedWindow()!
+
     const child = new BrowserWindow({
       parent,
       modal: true,
@@ -52,7 +53,15 @@ export async function action({ request }: DataFunctionArgs) {
       width: 500,
       height: 400,
     })
+
+    child.webContents.on("before-input-event", (event, input) => {
+      if (input.key === "Escape") {
+        child.close()
+      }
+    })
+
     child.once("ready-to-show", () => child.show())
+
     await child.loadURL("http://localhost:3000/settings")
   }
 
