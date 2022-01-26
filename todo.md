@@ -19,3 +19,5 @@
   - [ ] first page
   - [ ] last page
   - [ ] page numbers
+- [ ] indicator for whether a song is downloaded
+- [ ] delete button on songs
