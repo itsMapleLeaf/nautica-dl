@@ -1,4 +1,10 @@
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  SearchIcon,
+} from "@heroicons/react/solid"
 import type { DataFunctionArgs } from "@remix-run/server-runtime"
+import type { ComponentPropsWithoutRef, ReactNode } from "react"
 import { useEffect, useState } from "react"
 import { Form, Link, useLocation, useNavigate, useSearchParams } from "remix"
 import { cx } from "twind"
@@ -6,7 +12,10 @@ import type { NauticaSong } from "~/nautica"
 import { loadSongs } from "~/nautica"
 import { useLoaderDataTyped } from "~/remix-typed"
 import {
+  buttonIconLeftClass,
+  buttonIconRightClass,
   clearButtonClass,
+  iconClass,
   inputClass,
   raisedPanelClass,
   solidButtonClass,
@@ -50,16 +59,18 @@ function SearchForm() {
 
   return (
     <Form method="get" className="flex gap-2">
-      <input
-        type="search"
-        name="query"
-        placeholder="Search..."
-        defaultValue={query}
-        onChange={(event) => setQuery(event.target.value)}
-        className={cx`${inputClass} flex-1`}
-      />
+      <div className="flex-1">
+        <InputWithIcon
+          type="search"
+          name="query"
+          placeholder="Search..."
+          icon={<SearchIcon className={iconClass} />}
+          defaultValue={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      </div>
       <button type="submit" className={solidButtonClass}>
-        Search
+        <SearchIcon className={buttonIconLeftClass} /> Search
       </button>
     </Form>
   )
@@ -84,12 +95,12 @@ function Pagination() {
     <nav className="flex mx-auto gap-2">
       {data.links.prev ? (
         <Link to={`?` + prevPageUrl} className={clearButtonClass}>
-          Last Page
+          <ChevronLeftIcon className={buttonIconLeftClass} /> Previous Page
         </Link>
       ) : undefined}
       {data.links.next ? (
         <Link to={`?` + nextPageUrl} className={clearButtonClass}>
-          Next Page
+          Next Page <ChevronRightIcon className={buttonIconRightClass} />
         </Link>
       ) : undefined}
     </nav>
@@ -153,6 +164,20 @@ function SongCard({ song }: { song: NauticaSong }) {
           ))}
       </ul>
     </article>
+  )
+}
+
+function InputWithIcon({
+  icon,
+  ...props
+}: { icon: ReactNode } & ComponentPropsWithoutRef<"input">) {
+  return (
+    <div className="relative">
+      <input {...props} className={cx`${inputClass} pl-10 w-full`} />
+      <span className="absolute inset-y-0 left-0 flex items-center pl-2.5 opacity-50 pointer-events-none">
+        {icon}
+      </span>
+    </div>
   )
 }
 

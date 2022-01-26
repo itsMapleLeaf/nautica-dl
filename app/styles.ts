@@ -34,3 +34,8 @@ export const scrollbarClass = cx`
   scrollbar:(w-3 h-3 bg-transparent)
   scrollbar-thumb:(bg-stone-600 hover:bg-stone-500 active:bg-stone-700)
 `
+
+export const iconClass = cx`w-5`
+export const inlineIconClass = cx`${iconClass} inline align-text-bottom leading-none`
+export const buttonIconLeftClass = cx`${inlineIconClass} -ml-1`
+export const buttonIconRightClass = cx`${inlineIconClass} -mr-1`
