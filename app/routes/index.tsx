@@ -185,6 +185,8 @@ function SongList() {
 }
 
 function SongCard({ song }: { song: NauticaSong }) {
+  const fetcher = useFetcher()
+
   return (
     <article className={cx(raisedPanelClass, "h-full flex flex-col relative")}>
       <h2 className="p-3 flex flex-col justify-center text-center flex-1">
@@ -196,7 +198,21 @@ function SongCard({ song }: { song: NauticaSong }) {
         </div>
       </h2>
 
+      <div className="relative">
         <LazyImage src={song.jacket_url} alt="" className="aspect-square" />
+        <div className="transition bg-black/80 backdrop-filter backdrop-blur-sm opacity-0 hover:opacity-100 focus-within:opacity-100 absolute inset-0 grid place-items-center">
+          <fetcher.Form method="post" action="/download">
+            <input
+              type="hidden"
+              name="downloadUrl"
+              value={song.cdn_download_url}
+            />
+            <button type="submit" className={clearButtonClass}>
+              Download
+            </button>
+          </fetcher.Form>
+        </div>
+      </div>
 
       <ul aria-label="Charts" className="grid grid-flow-col auto-cols-fr">
         {song.charts
