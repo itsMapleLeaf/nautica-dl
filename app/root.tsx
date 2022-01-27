@@ -9,6 +9,7 @@ import {
 } from "remix"
 import { cx } from "twind"
 import fonts from "./fonts.css"
+import { ToastList } from "./modules/ui/toasts"
 import { scrollbarClass } from "./styles"
 
 export const meta: MetaFunction = () => {
@@ -29,7 +30,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <ToastList>
+          <Outlet />
+        </ToastList>
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}
