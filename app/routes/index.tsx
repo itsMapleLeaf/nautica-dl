@@ -18,9 +18,10 @@ import {
 import { cx } from "twind"
 import { BrowserWindow } from "~/electron.server"
 import { LazyImage } from "~/modules/ui/lazy-image"
+import { useToasts } from "~/modules/ui/toasts"
 import type { NauticaSong } from "~/nautica"
 import { loadSongs } from "~/nautica"
-import { useLoaderDataTyped } from "~/remix-typed"
+import { useFetcherTyped, useLoaderDataTyped } from "~/remix-typed"
 import {
   buttonIconLeftClass,
   buttonIconRightClass,
@@ -32,6 +33,7 @@ import {
   raisedPanelClass,
   solidButtonClass,
 } from "~/styles"
+import type { downloadAction } from "./download"
 
 export function loader({ request }: DataFunctionArgs) {
   const params = Object.fromEntries(new URL(request.url).searchParams)
@@ -185,7 +187,23 @@ function SongList() {
 }
 
 function SongCard({ song }: { song: NauticaSong }) {
-  const fetcher = useFetcher()
+  const fetcher = useFetcherTyped<typeof downloadAction>()
+  const toasts = useToasts()
+
+  useEffect(() => {
+    if (fetcher.data == undefined) return
+    if (fetcher.data.error) {
+      toasts.create({
+        message: fetcher.data.error,
+        duration: 5000,
+      })
+    } else {
+      toasts.create({
+        message: `${song.title} downloaded successfully.`,
+        duration: 5000,
+      })
+    }
+  }, [fetcher.data, song.title, toasts])
 
   return (
     <article className={cx(raisedPanelClass, "h-full flex flex-col relative")}>
@@ -202,14 +220,19 @@ function SongCard({ song }: { song: NauticaSong }) {
         <LazyImage src={song.jacket_url} alt="" className="aspect-square" />
         <div className="transition bg-black/80 backdrop-filter backdrop-blur-sm opacity-0 hover:opacity-100 focus-within:opacity-100 absolute inset-0 grid place-items-center">
           <fetcher.Form method="post" action="/download">
-            <input
-              type="hidden"
-              name="downloadUrl"
-              value={song.cdn_download_url}
-            />
-            <button type="submit" className={clearButtonClass}>
-              Download
-            </button>
+            <fieldset
+              disabled={!!fetcher.submission}
+              className={fetcher.submission ? "opacity-50" : ""}
+            >
+              <input
+                type="hidden"
+                name="downloadUrl"
+                value={song.cdn_download_url}
+              />
+              <button type="submit" className={clearButtonClass}>
+                {fetcher.state === "submitting" ? <LoadingIcon /> : "Download"}
+              </button>
+            </fieldset>
           </fetcher.Form>
         </div>
       </div>
@@ -264,4 +287,15 @@ function chartDifficultyName(difficulty: number): string {
 function maybeFiniteNumber(value: unknown): number | undefined {
   const numberValue = Number(value)
   return Number.isFinite(numberValue) ? numberValue : undefined
+}
+
+function LoadingIcon() {
+  return (
+    <div className="grid gap-1 grid-cols-2 w-5 h-5 animate-spin">
+      <div className="bg-red-400 w-full h-full rounded-full" />
+      <div className="bg-red-400 w-full h-full rounded-full" />
+      <div className="bg-red-400 w-full h-full rounded-full" />
+      <div className="bg-red-400 w-full h-full rounded-full" />
+    </div>
+  )
 }
