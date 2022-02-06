@@ -3,8 +3,8 @@ const { app, dialog } = require("electron")
 const {
   registerRemixProtocol,
   registerRemixProtocolAsPriviledged,
-} = require("./register-remix-protocol")
-const { createWindow } = require("./window")
+} = require("./register-remix-protocol.cjs")
+const { createWindow } = require("./window.cjs")
 
 void (async () => {
   try {
@@ -15,6 +15,7 @@ void (async () => {
   } catch (error) {
     dialog.showErrorBox(
       "Error",
+      // @ts-expect-error
       error?.stack || error?.message || String(error),
     )
   }

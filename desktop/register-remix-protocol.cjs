@@ -1,21 +1,29 @@
 // @ts-check
 const { app, protocol } = require("electron")
 const { createRequestHandler } = require("@remix-run/server-runtime")
-const { Request, Response, Headers } = require("@remix-run/node")
-const { join } = require("path")
+const {
+  Request,
+  Response,
+  Headers,
+  fetch,
+  FormData,
+  AbortController,
+} = require("@remix-run/node")
+const path = require("path")
 const { stat, readFile } = require("fs/promises")
 const mime = require("mime")
 
-// need to declare these globally, otherwise remix errors
-// @ts-expect-error
-globalThis.Request = Request
-// @ts-expect-error
-globalThis.Response = Response
-// @ts-expect-error
-globalThis.Headers = Headers
+Object.assign(globalThis, {
+  Request,
+  Response,
+  Headers,
+  fetch,
+  FormData,
+  AbortController,
+})
 
-const publicFolder = join(__dirname, "../public")
-const serverBuildFolder = join(__dirname, "build")
+const publicFolder = path.join(__dirname, "../public")
+const serverBuildFolder = path.join(__dirname, "build")
 const mode = app.isPackaged ? "production" : process.env.NODE_ENV
 
 exports.registerRemixProtocolAsPriviledged =
@@ -28,7 +36,7 @@ exports.registerRemixProtocolAsPriviledged =
   }
 
 exports.registerRemixProtocol = function registerRemixProtocol() {
-  protocol.registerStringProtocol("remix", async (request, callback) => {
+  protocol.interceptBufferProtocol("http", async (request, callback) => {
     try {
       // purging the require cache is necessary for changes to show with hot reloading
       if (mode === "development") {
@@ -45,7 +53,8 @@ exports.registerRemixProtocol = function registerRemixProtocol() {
     } catch (error) {
       callback({
         statusCode: 500,
-        data: `<pre>${error.stack || error.message || String(error)}</pre>`,
+        // @ts-expect-error
+        data: `<pre>${error?.stack || error?.message || String(error)}</pre>`,
       })
       console.warn(error)
     }
@@ -54,15 +63,16 @@ exports.registerRemixProtocol = function registerRemixProtocol() {
 
 /**
  * @param {Electron.ProtocolRequest} request
+ * @returns {Promise<Electron.ProtocolResponse | undefined>}
  */
 async function tryServeAsset(request) {
   const url = new URL(request.url)
-  const filePath = join(publicFolder, url.pathname)
+  const filePath = path.join(publicFolder, url.pathname)
   if (!(await isFile(filePath))) return
 
   return {
-    data: await readFile(filePath, "utf-8"),
-    mimeType: mime.getType(filePath),
+    data: await readFile(filePath),
+    mimeType: mime.getType(filePath) ?? undefined,
   }
 }
 
@@ -92,13 +102,14 @@ async function serveRemixResponse(request) {
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
-      "connect-src ws:",
+      "img-src http: https:",
+      "connect-src http: https: remix: ws:",
       "base-uri 'self'",
     ].join("; "),
   )
 
   return {
-    data: await response.text(),
+    data: Buffer.from(await response.arrayBuffer()),
     headers: Object.fromEntries(response.headers),
     statusCode: response.status,
   }
