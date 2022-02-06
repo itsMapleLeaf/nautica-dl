@@ -66,9 +66,7 @@
   "engines": {
     "node": ">=14"
   },
-  "sideEffects": [
-    "app/twind-setup.ts"
-  ],
+  "sideEffects": false,
   "eslintConfig": {
     "extends": [
       "./node_modules/@itsmapleleaf/configs/eslint"

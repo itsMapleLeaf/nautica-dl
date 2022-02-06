@@ -7,10 +7,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "remix"
-import { cx } from "twind"
+import { cx, install } from "twind"
+import twindConfig from "../twind.config.mjs"
 import fonts from "./fonts.css"
 import { ToastList } from "./modules/ui/toasts"
 import { scrollbarClass } from "./styles"
+
+install(twindConfig, process.env.NODE_ENV === "production")
 
 export const meta: MetaFunction = () => {
   return { title: "Nautica Downloader" }
