@@ -26,38 +26,37 @@ const publicFolder = path.join(__dirname, "../public")
 const serverBuildFolder = path.join(__dirname, "build")
 const mode = app.isPackaged ? "production" : process.env.NODE_ENV
 
-exports.registerRemixProtocolAsPriviledged =
-  function registerRemixProtocolAsPriviledged() {
-    // this allows Remix's scripts to use the sessionStorage API,
-    // and must be called *before* app ready
-    protocol.registerSchemesAsPrivileged([
-      { scheme: "remix", privileges: { secure: true, standard: true } },
-    ])
-  }
+exports.initRemix = function initRemix() {
+  // this allows Remix's scripts to use the sessionStorage API,
+  // and must be called *before* app ready
+  protocol.registerSchemesAsPrivileged([
+    { scheme: "remix", privileges: { secure: true, standard: true } },
+  ])
 
-exports.registerRemixProtocol = function registerRemixProtocol() {
-  protocol.interceptBufferProtocol("http", async (request, callback) => {
-    try {
-      // purging the require cache is necessary for changes to show with hot reloading
-      if (mode === "development") {
-        purgeRequireCache()
+  app.once("ready", () => {
+    protocol.interceptBufferProtocol("http", async (request, callback) => {
+      try {
+        // purging the require cache is necessary for changes to show with hot reloading
+        if (mode === "development") {
+          purgeRequireCache()
+        }
+
+        const assetResponse = await tryServeAsset(request)
+        if (assetResponse) {
+          callback(assetResponse)
+          return
+        }
+
+        callback(await serveRemixResponse(request))
+      } catch (error) {
+        callback({
+          statusCode: 500,
+          // @ts-expect-error
+          data: `<pre>${error?.stack || error?.message || String(error)}</pre>`,
+        })
+        console.warn(error)
       }
-
-      const assetResponse = await tryServeAsset(request)
-      if (assetResponse) {
-        callback(assetResponse)
-        return
-      }
-
-      callback(await serveRemixResponse(request))
-    } catch (error) {
-      callback({
-        statusCode: 500,
-        // @ts-expect-error
-        data: `<pre>${error?.stack || error?.message || String(error)}</pre>`,
-      })
-      console.warn(error)
-    }
+    })
   })
 }
 
@@ -81,14 +80,18 @@ async function tryServeAsset(request) {
  * @returns {Promise<Electron.ProtocolResponse>}
  */
 async function serveRemixResponse(request) {
-  const remixRequest = new Request(request.url, {
+  /** @type {import('@remix-run/node').RequestInit} */
+  const init = {
     method: request.method,
     headers: request.headers,
-  })
+  }
 
+  if (request.uploadData) {
+    init.body = Buffer.concat(request.uploadData.map((data) => data.bytes))
+  }
+
+  const remixRequest = new Request(request.url, init)
   remixRequest.headers.set("referrer", request.referrer)
-
-  // TODO: add uploadData to request as FormData
 
   /** @type {any} */
   const build = require("./build")

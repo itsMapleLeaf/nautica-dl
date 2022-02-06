@@ -1,16 +1,12 @@
 // @ts-check
 const { app, dialog } = require("electron")
-const {
-  registerRemixProtocol,
-  registerRemixProtocolAsPriviledged,
-} = require("./register-remix-protocol.cjs")
+const { initRemix } = require("./remix.cjs")
 const { createWindow } = require("./window.cjs")
 
 void (async () => {
   try {
-    registerRemixProtocolAsPriviledged()
+    initRemix()
     await app.whenReady()
-    registerRemixProtocol()
     await createWindow()
   } catch (error) {
     dialog.showErrorBox(
